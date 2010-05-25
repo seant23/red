@@ -1,0 +1,96 @@
+<div id="header"><?= $this->render('/includes/header.phtml') ?></div>
+
+            <td>
+                <br/>
+                 <h2 style="font-size: 20pt; font-style: italic; text-transform: capitalize;" align="center">
+                     <font style=" color: olive; font-style: italic; font-size: 30pt;">
+                        <?=$this->content['title']?>
+                     </font>
+                     <font style="font-size: 10pt; text-transform: capitalize;">By: <?=$this->user['first_name']?> <?=$this->user['last_name']?>
+                     </font>
+                </h2>
+            </td>
+         </tr>
+    </table>
+    <table>
+        <tr>
+        </tr>
+    </table>
+    <table width="800" align="center">
+    <tr>
+        <td style=" text-align: left;">
+            
+        </td>
+        <td width="160px" style=" text-align: right;">
+            <p>
+				<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+					<input type="hidden" name="cmd" value="_xclick">
+					<input type="hidden" name="business" value="seller_1274567159_biz@thayne.com">
+					<input type="hidden" name="lc" value="US">
+					<input type="hidden" name="amount" value="1">
+					<input type="hidden" name="no_shipping" value="1">
+					<input type="hidden" name="return" value="http://www.google.com">
+					<input type="hidden" name="return_cancel" value="http://www.nba.com">
+					<input type="hidden" name="notify_url" value="http://192.168.1.37:10088/Red/public/paypal/index">
+					<input type="hidden" name="item_name" value="content">
+					<input type="hidden" name="no_note" value="1">
+					<input type="hidden" name="a3" value="1.00">
+					<input type="hidden" name="currency_code" value="USD">
+					<input type="hidden" name="custom" value="<?//=http_build_query(array('user_id'=>$userID, 'subscription_id'=>$subscription['subscription_id'], 'token'=>User::createToken($subscription['subscription_id'], $userID)));?>" />
+					<input type="hidden" name="src" value="1">
+					<input type="hidden" name="sra" value="1">
+					<input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+					<img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+				</form>
+
+ 			</p>
+        </td>
+    </tr>
+    </table>
+    <?php
+        $plus = Red_Content::getPlus($this->content['content_id']);
+        $minus = Red_Content::getMinus($this->content['content_id']);
+        $views = Red_Content::getViews($this->content['content_id']);
+        $image = 'http://192.168.1.37:10088/Red/images/'.$this->content['content_id'].'.jpg';
+            if (@fopen($image, "r")) {
+                $image = $this->content['content_id'].'.jpg';
+            } else {
+                $image = 'default.jpg';
+            }
+    ?>
+    <table width="800" align="center">
+        <tr valign="top" style="font-size: 12pt; text-align: justify;">
+           <td>
+               <table style="float:left;">
+                   <tr>
+                       <td>
+                           <div>
+                                <img width="300" alt="" style="display:inline; float: left; padding-top: 20px; padding-left: 5px;" src="/Red/images/<?=$image?>" />
+                           </div>
+                       </td>
+                   </tr>
+               </table>
+               <table style="width: 475px; text-align: justify;">
+                   <tr>
+                       <td>
+                           <div style="float: left; font-size: 18pt;">
+                               <p>Views: <?=count($views)?></p>
+                           </div>
+                           <div style="float: right; font-size: 18pt;">
+                                <img border="0" src="http://t2.gstatic.com/images?q=tbn:Uv4SXAOqDQtPAM:http://www.forum.nokia.com/piazza/wiki/images/3/34/Thumbs_up_icon_sm.jpg" alt="" width="30px"/><? echo count($plus);?> <img border="0" src="http://t0.gstatic.com/images?q=tbn:XeZw7-CkdZ-5MM:http://www.dreamstime.com/thumb-down-gesture-icon-vector-thumb9227628.jpg" alt="" width="30px"/><? echo count($minus);?>
+                           </div>
+                       </td>
+                   </tr>
+                   <tr>
+                       <td>
+                           <div>
+                                <p><?=$this->content['description']?></p>
+                           </div>
+                       </td>
+                   </tr>
+               </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

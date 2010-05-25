@@ -1,0 +1,108 @@
+<?= $this->render('/includes/header.phtml') ?>
+            <td>
+                
+                <br/>
+                 <h2 style="font-size: 20pt; font-style: italic; text-transform: capitalize;" align="center">
+					<font style=" color: olive; font-style: italic; font-size: 30pt;">
+                        <?=$this->user['first_name']?> <?=$this->user['last_name']?>'s Profile
+                    </font>
+                </h2>
+            </td>
+         </tr>
+    </table>
+    <table>
+        <tr>
+        </tr>
+
+    </table>
+<table width="800" align="center">
+<tr>
+    <td style=" text-align: center;">
+    </td>
+</tr>
+</table>
+    <table width="800" align="center">
+        <tr valign="top" style="font-size: 10pt;">
+            <td style="width: 125px;">
+                <div style="background-color: #FFFFCC; border: 1px solid orange; height: 400px;width:125px;-moz-border-radius: 10px;">
+                    <font color="red" style="font-size: 12pt;">&nbsp;Bio </font>
+                    <br/>
+                    <br/>
+                    <?//php foreach ($categories as $category):?>
+                    <a style=" padding-left: 10px;" href="#"><?//=$category->categoryName?></a><br/><br/>
+                    <?//php endforeach;?>
+                </div>
+            </td>
+            <td valign="top">
+                <table>
+                   <tr>
+                                <?php if(isset($this->contents)) :?>
+                                <?php foreach($this->contents as $content):?>
+                       <?php
+                            $plus = Red_Content::getPlus($content['content_id']);
+                            $minus = Red_Content::getMinus($content['content_id']);
+                            $views = Red_Content::getViews($content['content_id']);
+                            $image = 'http://192.168.1.37:10088/Red/images/'.$content['content_id'].'.jpg';
+                            if (@fopen($image, "r")) {
+                                $image = $content['content_id'].'.jpg';
+                            } else {
+                                $image = 'default.jpg';
+                            }
+                        ?>
+                        <td style="border: 1px solid silver; -moz-border-radius: 5px; padding-bottom: 15px;">
+                                <div style="width: 650px; vertical-align: middle;">
+                                    <a href="/Red/public/content/item/content_id/<?=$content['content_id']?>"><img alt="" border="0" style="height: 150px; width: 150px; display:inline; float: left; padding-top: 20px; padding-left: 5px;" src="/Red/images/<?=$image?>" /></a>
+                                    <div style="padding-right: 20px; width: 450px; margin-left: 25px; display:inline; float: right;">
+                                        <div style="height:45px;">
+                                            <h4 style="display: inline; float: left; width: 310px;">
+                                                <a href="/Red/public/content/item/content_id/<?=$content['content_id']?>"><?=$content['title'];?></a><font style=" font-size: 10pt;"> -  <? echo count($views);?> Views</font>
+                                                <? if($_SESSION['user']['user_id'] == $content['user_id']) :?>
+                                                <font>
+                                                    -- <a href="/Red/public/content/edit/content/<?=$content['content_id']?>">EDIT</a>
+                                                </font>
+                                                <? endif;?>
+                                            </h4>
+                                            <div style="display: inline; float: right;">
+                                                <h4 style="font-size: 10pt;">
+                                                    <img border="0" src="http://t2.gstatic.com/images?q=tbn:Uv4SXAOqDQtPAM:http://www.forum.nokia.com/piazza/wiki/images/3/34/Thumbs_up_icon_sm.jpg" alt="" width="30px"/><? echo count($plus);?> <img border="0" src="http://t0.gstatic.com/images?q=tbn:XeZw7-CkdZ-5MM:http://www.dreamstime.com/thumb-down-gesture-icon-vector-thumb9227628.jpg" alt="" width="30px"/><? echo count($minus);?>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div>
+                                            <p style="text-align: left;">
+                                                <?php
+                                                if (strlen($content['description']) > 100){
+                                                echo substr($content['description'], 0, 100);
+                                                echo '...';
+                                                } else {
+                                                    echo $content['description'];
+                                                }
+
+                                                ?>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 style="float: left; font-size: 12px;">User: <?=$this->user['first_name']?> <?=$this->user['last_name']?></h3>
+                                            <h3 style="float: right; ">Price $<?=number_format($content['price'], 2, '.', '')?></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                        </td>
+                    </tr>
+
+                                <?php endforeach; ?>
+                                <?php else :?>
+                                   <div style="height: 175px; width: 650px; vertical-align: middle;">
+
+                                There are no results that match your search.<br/>
+                                Make sure no spelling errors were made.
+                                    </div>
+                                <br/>
+                                <?php endif;?>
+                </table>
+                </td>
+                    </tr>
+
+                </table>
+

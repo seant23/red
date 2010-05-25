@@ -1,0 +1,117 @@
+<div id="header"><?= $this->render('/includes/header.phtml') ?></div>
+            <td style="padding-bottom: 40px;">
+                <table>
+
+                <br/>
+                </table>
+                <table>
+                	<tr>
+                		<td>
+                            <form method="post" id="search_form">
+                            	<input type="text" name="searched" value="<?=$this->last_search?>" style=width:400px;height:40px;font-size:18pt; /><input type="submit" value="Search" size="10" style=height:40px;font-size:10pt;/>
+							
+						</td>
+                	</tr>
+                </table>
+            </td>
+        </tr>
+        <table>
+            <tr>
+            </tr>
+
+        </table>
+
+    </table>
+    <table width="800" align="center">
+        <tr valign="top" style="font-size: 10pt;">
+            <td style="width: 125px;">
+                <div style="background-color: #999; border: 1px solid black; height: 400px;width:125px;-moz-border-radius: 10px;">
+                    <font color="red" style="font-size: 12pt;">&nbsp;Categories </font>
+                    <br/>
+                    <br/>
+                </div>
+            </td>
+            <td valign="top">
+                <table width="659px;">
+                    <tr style="float: left;">
+                        <td>
+                            <font style=" font-weight: bolder;">Showing Results For: </font>"<font style=" font-style: italic;"><?=$this->last_search?></font>"
+                        </td>
+                    </tr>
+                    <tr style="float: right;">
+                        <td>
+                            Sort by:
+                            	<select name="sort" onChange="document.getElementById('search_form').submit()">
+                            		<option <? if ($this->last_sort == positive_votes):?>selected<? endif;?> value="positive_votes">Thumb up</option>
+                            		<option <? if ($this->last_sort == negative_votes):?>selected<? endif;?> value="negative_votes">Thumb down</option>
+                            		<option <? if ($this->last_sort == purchase_count):?>selected<? endif;?> value="purchase_count">Views</option>
+                            		<option <? if ($this->last_sort == price):?>selected<? endif;?> value="price">Price</option>
+                            	</select>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <?php if (isset ($this->contents)) :?>
+                        <?php foreach ($this->contents as $content) :?>
+                        <?php
+                            $plus = Red_Content::getPlus($content['content_id']);
+                            $minus = Red_Content::getMinus($content['content_id']);
+                            $views = Red_Content::getViews($content['content_id']);
+                            $user = Red_User::selectProfile($content['user_id']);
+                            $image = 'http://192.168.1.37:10088/Red/images/'.$content['content_id'].'.jpg';
+                            if (@fopen($image, "r")) {
+                                $image = $content['content_id'].'.jpg';
+                            } else {
+                                $image = 'default.jpg';
+                            }
+                        ?>
+                        <td style="border: 1px solid silver; -moz-border-radius: 5px;">
+                                <div style="width: 650px; vertical-align: middle;">
+                                    <img alt="" style="height: 150px; width: 150px; display:inline; float: left; padding-top: 20px; padding-left: 5px;" src="/Red/images/<?=$image?>" />
+                                    <div style="padding-right: 20px; width: 450px; margin-left: 25px; display:inline; float: right;">
+                                        <div style="height:45px;">
+                                            <h4 style="display: inline; float: left; width: 310px;"><a href="/Red/public/content/item/content_id/<?=$content['content_id']?>"><?=$content['title'];?></a><font style=" font-size: 10pt;"> -  <? echo count($views);?> Views</font></h4>
+                                            <div style="display: inline; float: right;">
+                                                <h4 style="font-size: 10pt;">
+                                                    <img border="0" src="http://t2.gstatic.com/images?q=tbn:Uv4SXAOqDQtPAM:http://www.forum.nokia.com/piazza/wiki/images/3/34/Thumbs_up_icon_sm.jpg" alt="" width="30px"/><? echo count($plus);?> <img border="0" src="http://t0.gstatic.com/images?q=tbn:XeZw7-CkdZ-5MM:http://www.dreamstime.com/thumb-down-gesture-icon-vector-thumb9227628.jpg" alt="" width="30px"/> <? echo count($minus);?>&nbsp;
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div>
+                                            <p style="text-align: left;">
+                                                <?php
+                                                if (strlen($content['description']) > 100){
+                                                echo substr($content['description'], 0, 100);
+                                                echo '...';
+                                                } else {
+                                                    echo $content['description'];
+                                                }
+
+                                                ?>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <a href="/Red/public/user/profile/user/<?=$user['user_id']?>"><h3 style="float: left; font-size: 12px;">User: <?=$user['first_name']?> <?=$user['last_name']?></h3></a>
+                                            <h3 style="float: right; ">Price $<?=number_format($content['price'], 2, '.', '')?></h3>
+                                        </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                        <?php endforeach;?>
+                    <?php else :?>
+                    <tr>
+	                    <td>
+	                        <div style="height: 175px; width: 650px; vertical-align: middle;">
+	                                There are no results that match your search.<br/>
+	                                Make sure no spelling errors were made.
+	                        </div>
+	                    </td>
+                    </tr>
+                    <br/>
+                    <?php endif;?>
+                </table>
+            </td>
+        </tr>
+    </table>
