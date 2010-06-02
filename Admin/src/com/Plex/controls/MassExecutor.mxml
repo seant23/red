@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="420" layout="absolute" headerHeight="5">
+	<mx:Metadata>
+		[Event(name="executionFinish", type="com.Plex.events.ExecutionEvent")]
+		[Event(name="executionStart", type="com.Plex.events.ExecutionEvent")]
+		[Event(name="executionError", type="com.Plex.events.ExecutionEvent")]
+		[Event(name="executionCancel", type="com.Plex.events.ExecutionEvent")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.Plex.events.ExecutionEvent;
+			import com.Plex.effects.Slick;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var titleText:String = "Working";
+			
+			public var currentTask:MassExecutorTask;
+			public var tasks:ArrayCollection = new ArrayCollection();
+			
+			public static function newInstance(title:String=null, parent:DisplayObject=null):MassExecutor {
+				var npu:MassExecutor = Slick.open(MassExecutor, true) as MassExecutor;
+				npu.titleText = title;
+				return npu;
+			}
+			
+			private function taskError(event:ExecutionEvent):void {
+				Prompt.error("An Fatal Execution Error Has Happened, Please contact development to resolve this issue.");
+				cancel();
+			}
+			
+			public function addAction(actionTitle:String=null, action:Function=null, toolText:String=null, actionData:Object=null):MassExecutorTask {
+				var task:MassExecutorTask = new MassExecutorTask();
+				task.title = actionTitle;
+				task.action = action;
+				task.toolTipText = toolText;
+				task.data = actionData;
+				
+				if(toolText == null) {
+					actionTitle = toolText;
+				}
+				
+				task.addEventListener(ExecutionEvent.TASK_COMPLETE, runNext);
+				task.addEventListener(ExecutionEvent.ERROR, taskError);
+				
+				tasks.addItem(task);
+				
+				return task;
+			}
+			
+			public function cancel():void {
+				dispatchEvent(new Event(ExecutionEvent.CANCEL));
+				Slick.close(this);
+			}
+			
+			public function start():void {
+				
+				if(tasks.length>0) {
+					
+					for(var i:int=0; i<tasks.length; i++) {
+						actionList.addChild(tasks.getItemAt(i) as MassExecutorTask);
+					}
+					
+					currentTask = tasks.getItemAt(0) as MassExecutorTask;
+					currentTask.execute();
+				}				
+				
+				dispatchEvent(new Event(ExecutionEvent.START));
+				progressBar.setProgress(0, tasks.length);
+				
+			}
+			
+			public function runNext(event:ExecutionEvent):void {
+				var taskIndex:int = tasks.getItemIndex(event.currentTarget);
+				
+				trace("HERE");
+				if(taskIndex+1 < tasks.length) {
+					currentTask = tasks.getItemAt(taskIndex+1) as MassExecutorTask;
+					actionList.verticalScrollPosition = taskIndex * 25;
+					currentTask.execute();
+				} else {
+					dispatchEvent(new ExecutionEvent(ExecutionEvent.COMPLETE));
+					Slick.close(this);
+				}
+				
+				progressBar.setProgress(taskIndex+1, tasks.length);
+				
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:VBox right="10" left="10" top="10" bottom="10">
+		<mx:Label text="{titleText}" width="100%" textAlign="center" fontWeight="bold" fontSize="16"/>
+		<mx:Label text="(Please Wait)" textAlign="center" width="100%"/>
+		<mx:HRule width="100%"/>
+		<mx:Label text="Current Tasks" fontWeight="bold"/>
+		<mx:VBox id="actionList" height="250" width="100%">
+		</mx:VBox>
+		<mx:HRule width="100%"/>
+		<mx:Label text="Total Progress" fontWeight="bold"/>
+		<mx:ProgressBar labelPlacement="center" width="100%" label="%1 of %2"  indeterminate="false" mode="manual" id="progressBar"/>
+		<mx:Spacer/>
+	</mx:VBox>
+</mx:TitleWindow>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="250" height="24" 
+	xmlns:mc="com.mConnects.*" backgroundColor="#FFFFFF">
+	<mx:states>
+		<mx:State name="down">
+			<mx:SetProperty target="{startDownload}" name="visible" value="false"/>
+			<mx:SetProperty target="{downloadProgress}" name="visible" value="true"/>
+		</mx:State>
+		<mx:State name="out"/>
+	</mx:states>
+
+<mx:Script>
+	<![CDATA[
+		import com.mConnects.FileDownload;
+		[Bindable]public var downloadLbl:String;
+		[Bindable]public var setContactID:String;
+		[Bindable]public var setLbl:String;
+		[Bindable]public var setURL:String;
+		
+		[Embed(source="com/mConnects/menu/images/menu_tab_btn_off.gif")]
+		[Bindable]public var pbSkin:Class;
+		[Embed(source="com/mConnects/menu/images/menu_tab_btn_on.gif")]
+		[Bindable]public var pbSkinOn:Class;
+		
+		private function keepState(e:Event):void
+		{
+			fileLbl.text="DOWNLOAD COMPLETE";
+			fileLbl.setStyle("horizontalCenter",0);
+			fileLbl.y=2;
+		}
+	]]>
+</mx:Script>
+
+	<mc:FileDownload id="fileDownload" creationComplete="{fileDownload.init(downloadProgress, cancelDownload,setContactID,setLbl,setURL);}"/>
+		<mx:Button label="Cancel" id="cancelDownload" click="fileDownload.cancelDownload()" visible="false"  />
+		<mx:ProgressBar complete="keepState(event)" id="downloadProgress" trackHeight="30" trackColors="[0xffffff, 0xffffff]"
+			label="{downloadLbl}" mode="manual" width="100%"  x="0"  />
+		<mx:Button label="Download" id="startDownload" fontSize="9" fontWeight="normal" textAlign="left" labelPlacement="left"
+			click="fileDownload.startDownload();currentState='down'" x="0"  height="20" y="2"/>
+		<mx:Label id="fileLbl" text="{downloadLbl}" x="{startDownload.width + 5}" y="2"/>
+	
+		
+	
+</mx:Canvas>

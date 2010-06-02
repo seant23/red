@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="300" cornerRadius="20" backgroundColor="#000000" borderColor="#000000" borderStyle="solid" borderThickness="0" minHeight="75" backgroundAlpha="0.75">
+		<mx:Script>
+			<![CDATA[
+				[Bindable]
+				public var message:Object = {
+					'title':null,
+					'body':null
+				}
+			]]>
+		</mx:Script>
+		<mx:Image source="growl.jpg" left="15" top="13" height="49"/>
+		<mx:Text x="71" y="10" text="{message.title}" color="#e0e0e0" fontSize="15" fontFamily="Verdana_Embed" fontWeight="bold"/>
+		<mx:Text x="71" y="35" text="{message.body}" fontSize="12" color="#e0e0e0" fontFamily="Verdana_Embed" fontStyle="italic"/>
+</mx:Canvas>

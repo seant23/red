@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="640" height="518" showCloseButton="true" close="close()" title="Edit User">
+	<mx:RemoteObject id="userService" source="User" destination="zend" showBusyCursor="true">
+		<mx:method name="getUser" result="getUsersResult( event )" />
+		<mx:method name="getUserContent" result="getUserContentResult( event )" />
+		<mx:method name="saveUser" result="saveUserResult()" />
+		<mx:method name="deleteUser" result="Application.application.userService.getUsers()" />
+	</mx:RemoteObject>
+	<mx:RemoteObject id="contentService" source="Content" destination="zend" showBusyCursor="true">
+		<mx:method name="deleteContent" result="userService.getUserContent(user.user_id);" />
+	</mx:RemoteObject>
+	<mx:Script>
+		<![CDATA[
+			import com.Plex.controls.Prompt;
+			import com.Plex.effects.Slick;
+			import mx.rpc.events.ResultEvent;
+			import mx.core.Application;
+			
+			[Bindable]
+			public var user:Object;
+			
+			public function loadUser( userID:int ):void {
+				userService.getUser(userID);
+				userService.getUserContent(userID);
+			}
+			
+			public function saveUserResult():void {
+				Application.application.userService.getUsers()
+				Prompt.info('User Saved'); 
+			}
+			
+			public function getUsersResult( e:ResultEvent ):void {
+				user = e.result;
+			}
+			
+			public function getUserContentResult( e:ResultEvent ):void {
+				contentGrid.dataProvider = e.result;
+			}
+			
+			public function close():void {
+				Slick.close(this);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:TabNavigator top="0" left="0" right="0" bottom="10" creationPolicy="all">
+		<mx:Canvas label="User Settings" width="100%" height="100%">
+			<mx:Form left="10" right="10" top="10" bottom="10">
+				<mx:FormItem label="First Name" width="100%">
+					<mx:TextInput text="{user.first_name}" change="user.first_name = event.currentTarget.text" width="100%"/>
+				</mx:FormItem>
+				<mx:FormItem label="Last Name" width="100%">
+					<mx:TextInput text="{user.last_name}" change="user.last_name = event.currentTarget.text" width="100%"/>
+				</mx:FormItem>
+				<mx:FormItem label="Email" width="100%">
+					<mx:TextInput text="{user.email}" change="user.email = event.currentTarget.text" width="100%"/>
+				</mx:FormItem>
+				<mx:FormItem label="Admin? " horizontalAlign="center" width="100%">
+					<mx:HBox width="100%">
+						<mx:RadioButtonGroup id="isAdmin" selectedValue="{user.is_admin}" change="user.is_admin = event.currentTarget.selectedValue"/>
+						<mx:RadioButton label="Yes" groupName="isAdmin" value="1"/>
+						<mx:RadioButton label="No" groupName="isAdmin" value="0"/>
+					</mx:HBox>
+				</mx:FormItem>
+				<mx:RadioButtonGroup id="radiogroup1"/>
+				<mx:FormItem label="Banned?" horizontalAlign="center" width="100%">
+					<mx:HBox width="100%">
+						<mx:RadioButtonGroup id="isBanned" selectedValue="{user.is_banned}" change="user.is_banned = event.currentTarget.selectedValue"/>
+						<mx:RadioButton label="Yes" groupName="isBanned" value="1"/>
+						<mx:RadioButton label="No" groupName="isBanned" value="0"/>
+					</mx:HBox>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:Canvas>
+		<mx:Canvas label="Content" width="100%" height="100%">
+			<mx:DataGrid id="contentGrid" right="10" left="10" top="10" bottom="38">
+				<mx:columns>
+					<mx:DataGridColumn width="50" headerText="ID" dataField="content_id"/>
+					<mx:DataGridColumn headerText="Title" dataField="title"/>
+					<mx:DataGridColumn width="75" headerText="Price" dataField="price"/>
+					<mx:DataGridColumn width="75" headerText="Views" dataField="views"/>
+					<mx:DataGridColumn width="75" headerText="Purchases" dataField="purchase_count"/>
+					<mx:DataGridColumn width="100" headerText="Actions">
+						<mx:itemRenderer>
+							<mx:Component>
+				          			<mx:HBox horizontalScrollPolicy="off" width="100" horizontalGap="5" horizontalAlign="center">
+				          				<mx:Script>
+				          					<![CDATA[
+				          						import com.Plex.effects.Slick;
+				          						import com.red.User_Editor;
+				          						import com.Plex.controls.ButtonPrompt;
+				          						import com.Plex.controls.Prompt;
+				          						import mx.core.Application;
+				          						
+				          						public function editContent():void {
+				          							//var editor:User_Editor = Slick.open(User_Editor) as User_Editor;
+				          							//editor.loadUser(data.user_id);
+				          						}
+				          						
+				          						public function deleteContent():void {
+				          							var bp:ButtonPrompt = ButtonPrompt.newInstance('Are You Sure?',
+				          								'Are you sure you want to delete this content permanantly?');
+				          							bp.addOption('Yes, Delete Content', function():void {
+				          								outerDocument.contentService.deleteContent(data.content_id);
+				          							},'Symbol-Check');
+				          							bp.addOption('No, Don\'t Delete Content', null, 'Symbol-Stop');
+				          						}
+				          						
+				          						
+				          					]]>
+				          				</mx:Script>
+				          				<mx:Image buttonMode="true" source="asset/image/silk/user_edit.png" click="editContent()" toolTip="Edit "/>
+				          				<mx:Image buttonMode="true" source="asset/image/silk/user_delete.png" click="deleteContent()" toolTip="Delete "/>
+
+				          			</mx:HBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox y="367" horizontalCenter="0">
+				<mx:Button label="&lt;&lt; Previous Page" width="140"/>
+				<mx:Button label="Next Page &gt;&gt;" width="140"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas label="Payments" width="100%" height="100%">
+		</mx:Canvas>
+	</mx:TabNavigator>
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="Delete User">
+			<mx:icon>@Embed(source='../../asset/image/silk/user_delete.png')</mx:icon>
+		</mx:Button>
+		<mx:Button label="Change Password">
+			<mx:icon>@Embed(source='../../asset/image/silk/lock_edit.png')</mx:icon>
+		</mx:Button>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Save" click="userService.saveUser(user)">
+			<mx:icon>@Embed(source='../../asset/image/silk/disk.png')</mx:icon>
+		</mx:Button>
+		<mx:Button label="Close" click="close();">
+			<mx:icon>@Embed(source='../../asset/image/silk/decline.png')</mx:icon>
+		</mx:Button>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

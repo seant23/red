@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" focusIn="callLater(checkTextIn)" focusOut="checkTextOut()" toolTip="{title}" creationComplete="checkTextOut()" change="editing();">
+	<mx:Metadata>
+		[Event(name="editStart", type="com.Plex.events.Edit_Event")]
+		[Event(name="editComplete", type="com.Plex.events.Edit_Event")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.Plex.events.Edit_Event;
+			import com.Plex.module.PlexModuleManager;
+			[Bindable] public var title:String;
+			
+			override public function set text(value:String):void {
+				super.text = value;
+				
+				if(value.length > 0) {
+					setStyle('color', 0x0b333c);
+				}
+			}
+			
+			override public function get text():String {
+				return super.text;
+			}
+			
+			public var password:Boolean = false;
+			
+			public function checkTextIn():void {
+				if(text == title) {
+					text = '';
+				}
+				
+				if(password) {
+					displayAsPassword = true;
+				}
+				
+				setStyle('color', 0x0b333c);
+			}
+			
+			public function checkTextOut():void {
+				if(text == '') {
+					text = title;
+					setStyle('color', 0xABB1B2);
+					
+					if(password) {
+						displayAsPassword = false;
+					}
+				}
+			}
+			
+			public var editingTimeoutId:uint = 0;
+			public var editingTimer:uint = 1000;
+			
+			public function editing():void {
+							
+				if(editingTimeoutId > 0) {
+					clearTimeout(editingTimeoutId);
+					editingTimeoutId = 0;
+				}
+				
+				editingTimeoutId = setTimeout(doneEditing, editingTimer);
+			}
+			
+			public function doneEditing():void {
+				dispatchEvent(new Edit_Event(Edit_Event.COMPLETE));
+			}
+			
+			public function getValue():String {
+				return (text==title ? '' : text)
+			}
+			
+			public function get value():String {
+				return (text==title ? '' : text)
+			}
+			
+			public function setSelectable(value:Boolean):void {
+				textField.selectable = value;
+			}
+			
+		]]>
+	</mx:Script>
+</mx:TextInput>

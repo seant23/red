@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SmoothImage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="com.Plex.controls.*" resize="image_resize(event)">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ResizeEvent;
+			
+			private var _cornerRadius:int = 0;
+			private var roundedMask:Sprite = new Sprite();
+			
+			private function image_resize(evt:ResizeEvent=null):void {
+                roundedMask.graphics.clear();
+                roundedMask.graphics.beginFill(0xFF0000);
+                roundedMask.graphics.drawRoundRect(0, 0, width, height, _cornerRadius, cornerRadius);
+                roundedMask.graphics.endFill();
+                this.mask = roundedMask;
+                this.addChild(roundedMask);
+            }
+            
+            public function set cornerRadius(radius:int):void {
+            	_cornerRadius = radius;
+            	image_resize();
+            }
+            
+            public function get cornerRadius():int {
+            	return _cornerRadius
+            }
+            
+		]]>
+	</mx:Script>
+</SmoothImage>

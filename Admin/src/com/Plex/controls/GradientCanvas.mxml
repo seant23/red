@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" resize="applyGradient()">
+    <!-- This looks far more complicated than it is.  For the guts, look at applyGradient().
+      Everything else is just fluff for attribute passing, etc. -->
+    <mx:Script>
+        <![CDATA[
+        import mx.core.UIComponent;
+        import flash.geom.Matrix;
+        
+         //
+        // Constants
+        public const LINEAR:String = GradientType.LINEAR;
+        public const RADIAL:String = GradientType.RADIAL;
+        
+        public var gradientCornerRadius:uint=0;
+        
+         // 
+        // Private Properties
+        private var _startColor:uint = 0x000000;
+        private var _endColor:uint = 0xFFFFFF;
+        private var _angle:uint = 90;
+        private var _type:String = LINEAR;
+        private var _offsetX:uint = 0;
+        private var _offsetY:uint = 0;
+        private var _colorArray:Array = new Array();
+        private var _opacityArray:Array = new Array();
+        private var _midpointArray:Array = new Array();
+
+         //
+        // Private Functions
+        private function applyGradient():void {
+            var m:Matrix = new Matrix();
+            var angleInRadians:Number = (this._angle/180) * Math.PI;
+            var i:uint = 0;
+            var opacArr:Array;
+            var mpArr:Array;
+            // establish default arrays
+            if (!_colorArray.length) {
+                _colorArray = [_startColor, _endColor];
+            }
+            if (!_opacityArray.length || _opacityArray.length != _colorArray.length) {
+                opacArr = new Array(_colorArray.length);
+                for (i=0; i<_colorArray.length; i++) {
+                    opacArr[i] = 1;
+                }
+            } else {
+                opacArr = _opacityArray;
+            }
+            if (!_midpointArray.length || _midpointArray.length != _colorArray.length) {
+                mpArr = new Array(_colorArray.length);
+                var evenWidth:Number = 255 / (_colorArray.length-1);
+                mpArr[0] = 0;
+                mpArr[_colorArray.length-1] = 255;
+                // loop from the second element to the second-to-last element to find the tween points
+                for (i=1; i<_colorArray.length-1; i++) {
+                    mpArr[i] = int(i * evenWidth);
+                }
+            } else {
+                mpArr = _midpointArray;
+            }
+            // create the gradient
+            m.createGradientBox(this.width, this.height, angleInRadians, _offsetX,_offsetY);
+            this.graphics.clear();
+            this.graphics.beginGradientFill(_type, _colorArray, opacArr ,mpArr, m);
+           // this.graphics.drawRect(0,0,this.unscaledWidth,this.unscaledHeight);
+            this.graphics.drawRoundRect(0, 0, this.unscaledWidth, this.unscaledHeight, gradientCornerRadius, gradientCornerRadius);
+            this.graphics.endFill();
+        }
+        
+         //
+        // Setters re-call applyGradient()
+        [Inspectable (defaultValue=0x000000, format="Color", type="Color")]
+        [Bindable] 
+        public function set startColor(val:uint):void     { 
+            _colorArray[0] = val;
+            _startColor = val;
+            if (_opacityArray[0] == undefined) _opacityArray[0] = 1;
+            if (_midpointArray[0] == undefined) _midpointArray[0] = 0;
+            applyGradient();
+        }
+        [Inspectable (defaultValue=0xFFFFFF, format="Color", type="Color")]
+        [Bindable] 
+        public function set endColor(val:uint):void       {
+            _colorArray[1] = val;
+            _endColor = val;
+            if (_opacityArray[1] == undefined) _opacityArray[1] = 1;
+            if (_midpointArray[1] == undefined) _midpointArray[1] = 255;
+            applyGradient();
+        }
+        [Inspectable (defaultValue=90)]
+        [Bindable] public function set angle(val:uint):void          { _angle=val;          applyGradient();   }
+        [Inspectable (defaultValue=90)]
+        [Bindable] public function set offsetX(val:uint):void        { _offsetX=val;        applyGradient();   }
+        [Inspectable (defaultValue=90)]
+        [Bindable] public function set offsetY(val:uint):void        { _offsetY=val;        applyGradient();   }
+        [Inspectable (defaultValue=LINEAR)]
+        [Bindable] public function set type(val:String):void         { _type=val;           applyGradient();   }
+        [Inspectable (type="Array")]
+        [Bindable] public function set opacityArray(val:Array):void  { _opacityArray=val;   applyGradient();   }
+        [Inspectable (type="Array")]
+        [Bindable] public function set midpointArray(val:Array):void { _midpointArray=val;  applyGradient();   }
+        [Inspectable (type="Array")]
+        [Bindable] public function set colorArray(val:Array):void    { _colorArray=val;        applyGradient();   }
+         //
+        // Getters
+        public function get startColor():uint     { return _startColor;   }
+        public function get endColor():uint       { return _endColor;     }
+        public function get angle():uint          { return _angle;        }
+        public function get offsetX():uint        { return _offsetX;      }
+        public function get offsetY():uint        { return _offsetY;      }
+        public function get type():String         { return _type;         }
+        public function get colorArray():Array    { return _colorArray;   }
+        public function get opacityArray():Array  { return _opacityArray; }
+        public function get midpointArray():Array { return _midpointArray }
+        ]]>
+    </mx:Script>
+    
+</mx:Canvas>

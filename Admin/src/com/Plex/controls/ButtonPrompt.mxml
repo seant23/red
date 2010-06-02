@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	creationComplete="updateHeight();" layout="absolute" width="400" height="100" title="Please Select An Option From Below." roundedBottomCorners="true">
+	<mx:Metadata>
+		[Event(name="modelCreateComplete", type="com.Plex.events.ModelEvent")]
+		[Event(name="modelUpdateComplete", type="com.Plex.events.ModelEvent")]
+		[Event(name="modelDeleteComplete", type="com.Plex.events.ModelEvent")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			import mx.core.Application;
+			
+			import com.Plex.effects.Slick;
+			
+			[Bindable]
+			public var description:String = "Please Select An Option From Below.";
+			
+			public static function newInstance(title:String, description:String=null):ButtonPrompt {
+				var newPrompt:ButtonPrompt = ButtonPrompt(PopUpManager.createPopUp(Application.application as DisplayObject,ButtonPrompt,true));
+				newPrompt.x = (Application.application.width  - newPrompt.width) / 2;
+	            newPrompt.y = -500;
+				newPrompt.title = title;
+				newPrompt.description = description;
+				
+				Slick.newPopup();
+				Slick.openPopups.addItem(newPrompt);
+				
+				return newPrompt;
+			}
+			
+			public function close(event:MouseEvent=null):void {
+				Slick.close(this);
+			}
+			
+			public function addOption(title:String, handler:Function, image:String=null):ButtonPromptChoice {
+				var option:ButtonPromptChoice = new ButtonPromptChoice();
+				
+				option.title = title;
+				
+				if(handler!=null) {
+					option.addEventListener(MouseEvent.CLICK, function():void {
+						if(option.enabled) {
+							handler();
+						}
+					});
+				} 
+				
+				option.addEventListener(MouseEvent.CLICK, function():void {
+					if(option.enabled) {
+						close();
+					}
+				}); 
+				
+				if(image != null) {
+					option.image = image;
+				}
+				
+				choices.addChild(option);
+				
+				return option;				
+			}
+			
+			public function updateHeight():void {
+				var optionCount:int = choices.getChildren().length;
+				var optionHeight:int = optionCount*40 + (optionCount-1)*6;
+				var descriptionHeight:int = body.height;
+				
+				if(body.text.length == 0) {
+					descriptionHeight = -15;
+				}
+				
+				this.height = descriptionHeight + optionHeight + 70;
+				center();
+			}
+			
+			public function center():void {
+				windowMove.xTo = (Application.application.width  - width) / 2;
+				windowMove.yTo = (Application.application.height  - height) / 2;
+				windowMove.play();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Move duration="300" id="windowMove" target="{this}" />
+	<mx:Text id="body" text="{description}" right="10" left="10" top="10"/>
+	<mx:VBox id="choices" right="10" left="10" bottom="10"></mx:VBox>
+</mx:TitleWindow>

@@ -1,0 +1,142 @@
+Application
+{
+    background-color:         "-90deg #e1ecf9 #ffffff #e1ecf9";
+    background-blend:         hardlight;
+    borderSkin:             ClassReference("com.degrafa.skins.CSSSkin");
+}
+
+Canvas.Menu {
+    border-width:                 1px;
+    border-top-left-radius:     10px;
+    border-top-right-radius:     10px;
+    border-bottom-left-radius:     10px;
+    border-bottom-right-radius:     10px;
+    borderSkin:                 ClassReference("com.degrafa.skins.CSSSkin");
+}
+
+Canvas.Bottom {
+    border-width:                 0px;
+    border-bottom-left-radius:     10px; 
+    border-bottom-right-radius:     10px;
+    borderSkin:                 ClassReference("com.degrafa.skins.CSSSkin");
+}
+
+Canvas.Top {
+    border-width:                 0px;
+    border-top-left-radius:     10px;
+    border-top-right-radius:     10px;
+    borderSkin:                 ClassReference("com.degrafa.skins.CSSSkin");
+}
+
+
+Alert
+{ 
+   color : #0f3177;
+   cornerRadius: 6;
+   headerHeight: 19;
+   borderThickness: 1;
+   dropShadowEnabled: true;
+   shadowDistance: 1;
+   shadowDirection: center;
+   dropShadowColor: #000000;
+   /*roundedBottomCorners: true;*/
+   textAlign: left;
+   backgroundAlpha: 1;
+   borderAlpha: 0.3;
+   highlightAlphas: 1, 0;
+   borderStyle: solid;
+   headerColors: #333333, #cccccc;
+   footerColors: #6e7b81, #cccccc;
+   backgroundColor: #ffffff;
+   borderColor: #cccccc;
+	title-style-name : "alertTitle";
+} 
+
+.alertTitle{
+	/*font-family :Verdana;
+	font-size :10;*/
+	font-weight :bold;
+	text-align :left;
+	color :#0b333c;
+}
+
+.roundedBottom {
+	border-style:solid;
+	border-thickness: 10px;
+	border-bottom-right-radius:     10px;
+    border-bottom-left-radius:     10px;
+}
+
+TitleWindow
+{
+	backgroundAlpha: 1;
+	borderAlpha: .85;
+	borderColor: #89BBF8;
+	borderStyle: solid;
+	borderThickness: 1;
+	backgroundColor: #FFFFFF;
+}
+
+Panel.TW
+{
+	backgroundAlpha: 1;
+	borderAlpha: .85;
+	borderColor: #89BBF8;
+	borderStyle: solid;
+	borderThickness: 1;
+	backgroundColor: #FFFFFF;
+	border-bottom-right-radius:     10px;
+    border-bottom-left-radius:     10px;
+}
+
+Button.save { icon: Embed(source="../image/silk/disk.png"); }
+Button.close { icon: Embed(source="../image/silk/decline.png"); }
+Button.create { icon: Embed(source="../image/silk/add.png"); } 
+
+
+
+
+
+
+
+
+
+/* CSS file */
+
+ 
+EditButton {
+	up-skin: Embed('../image/ipe/edit.png');
+	over-skin: Embed('../image/ipe/edit.png');	 
+	down-skin: Embed('../image/ipe/done.png'); 
+	disabled-skin: Embed('../image/ipe/edit.png');
+
+	selected-up-skin: Embed('../image/ipe/done.png');
+	selected-over-skin: Embed('../image/ipe/done.png');	
+	selected-down-skin: Embed('../image/ipe/edit.png');	
+	selected-disabled-skin: Embed('../image/ipe/done.png');
+}
+
+
+SuperTabNavigator { 
+	tabStyleName: customTab;
+}
+
+.customTab {
+	tabCloseButtonStyleName: customCloseButton;
+	background-alpha:.6;
+	corner-radius:3;
+	border-style:solid;
+	border-thickness: 1;
+}
+
+.customCloseButton {
+	upSkin: Embed('../image/theme/close.png'); 
+	downSkin: Embed('../image/theme/close_down.png');
+	overSkin: Embed('../image/theme/close_over.png')
+} 
+
+
+
+
+
+

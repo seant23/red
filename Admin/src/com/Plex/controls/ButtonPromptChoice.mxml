@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" buttonMode="true" mouseChildren="false" mouseOut="mouseOutHandler(event)" mouseOver="mouseOverHandler(event)" width="100%" borderStyle="solid" cornerRadius="5" height="40" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.benstucki.utilities.IconUtility;
+			[Bindable]
+			public var title:String = "Option Title";
+			
+			[Bindable]
+			public var image:String = "Symbol-Check-Blue";
+			
+			public function mouseOutHandler(event:MouseEvent):void {
+				if(enabled) {
+					event.currentTarget.setStyle('backgroundColor', '')
+				}
+			}
+			
+			public function mouseOverHandler(event:MouseEvent):void {
+				if(enabled) {
+					event.currentTarget.setStyle('backgroundColor', 0xd3e3f2)
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Spacer/>
+	<mx:Image width="35" height="35" source="{IconUtility.getIcon('asset/image/areo/35/'+image+'.png').icon}"/>
+	<mx:VRule height="100%"/>
+	<mx:Label text="{title}" fontSize="20" width="100%" textAlign="left" fontFamily="Arial"/>
+</mx:HBox>

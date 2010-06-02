@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application pageTitle="Contacts" layout="absolute"
+xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onStartup()">
+
+<mx:Script>
+<![CDATA[
+import mx.rpc.events.ResultEvent;
+ 
+private function onStartup() : void {
+	myservice.source = "_com_mconnects_employee_Employee";
+    myservice.getContacts();
+}
+
+private function doAdd( event:Event ) : void {
+    //svcContacts.add( txtName.text, txtEmail.text, txtPhone.text );
+    txtName.text = '';
+    txtEmail.text = '';
+    txtPhone.text = '';
+}
+
+private function doAddResult( event:ResultEvent ) : void {
+    //svcContacts.getContacts();
+}
+
+
+private function doContactsResult( event:ResultEvent ) : void {
+    //dg.dataProvider = event.result; 
+}
+]]>
+</mx:Script>
+
+<mx:RemoteObject id="myservice" destination="zend" showBusyCursor="true">
+<mx:method name="getContacts" result="doContactsResult( event )" />
+<mx:method name="add" result="doAddResult( event )" />
+</mx:RemoteObject>
+
+<mx:Panel width="500" height="400" layout="vertical" title="Contacts" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+horizontalAlign="center" horizontalCenter="0" verticalCenter="0">
+
+<mx:DataGrid id="dg" width="100%" height="100%">
+<mx:columns>
+    <mx:DataGridColumn headerText="Name" dataField="name" />
+    <mx:DataGridColumn headerText="Email" dataField="email" />
+    <mx:DataGridColumn headerText="Phone" dataField="phone" />
+</mx:columns>
+</mx:DataGrid>
+
+<mx:Form>
+    <mx:FormItem label="Name">
+        <mx:TextInput id="txtName" />
+    </mx:FormItem>
+    <mx:FormItem label="Email">
+        <mx:TextInput id="txtEmail" />
+    </mx:FormItem>
+    <mx:FormItem label="Phone">
+        <mx:TextInput id="txtPhone" />
+    </mx:FormItem>
+</mx:Form>
+<mx:Button label="Add" click="doAdd( event )" />
+</mx:Panel>
+</mx:Application>

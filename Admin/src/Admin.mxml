@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()">
+	<mx:Style source="/asset/style/MConnects.css" />
+	<mx:RemoteObject id="adminService" source="Admin" destination="zend" showBusyCursor="true">
+		<mx:method name="isLoggedIn" result="isLoggedInResult( event )" />
+		<mx:method name="logOut" result="Slick.open(Login_Prompt)" />
+	</mx:RemoteObject>
+	<mx:RemoteObject id="userService" source="User" destination="zend" showBusyCursor="true">
+		<mx:method name="getUsers" result="getUsersResult( event )" />
+		<mx:method name="getStats" result="getStatsResult( event )" />
+		<mx:method name="deleteUser" result="userService.getUsers()" />
+	</mx:RemoteObject>
+	<mx:AnimateProperty target="{this}" property="alpha" duration="600" id="fader" />
+	<mx:Script>
+		<![CDATA[
+			import com.red.Change_Password_Prompt;
+			import com.red.Login_Prompt;
+			import com.Plex.effects.Slick;
+			import mx.events.EffectEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			public function init():void {
+				adminService.isLoggedIn();
+			}
+			
+			public function isLoggedInResult( e:ResultEvent ): void {
+				if(!e.result) {
+					Slick.open(Login_Prompt);
+				} else {
+					loadData();
+				}
+			}
+			
+			public function loadData():void {
+				userService.getUsers();
+				userService.getStats();
+			}
+			
+			public function getUsersResult( e:ResultEvent ):void {
+				userGrid.dataProvider = e.result;
+			}
+			
+			public function getStatsResult( e:ResultEvent ):void {
+				userChart.dataProvider = [e.result];
+			}
+			
+			public function changePassword():void {
+				Slick.open(Change_Password_Prompt);
+			}
+			
+			
+			public function cacheBitmap(event:Event=null):void {
+				blendMode = BlendMode.LAYER;
+			}
+			
+			public function uncacheBitmap(event:Event=null):void {
+				blendMode = BlendMode.NORMAL;
+				
+				if(event) {
+					fader.removeEventListener(EffectEvent.EFFECT_END, uncacheBitmap);
+				}
+			}
+			
+			public function fadeIn():void {
+				uncacheBitmap();
+				cacheBitmap();
+				
+				fader.fromValue = 0;
+				fader.toValue = 1;
+				fader.play();
+				
+				fader.addEventListener(EffectEvent.EFFECT_END, uncacheBitmap);
+			}
+			
+			public function fadeOut():void {
+				cacheBitmap();
+				fader.fromValue = 1;
+				fader.toValue = 0;
+				fader.play();
+			}
+			
+			public function highlight(event:MouseEvent, on:Boolean):void {
+				if(on) {
+					event.currentTarget.setStyle('backgroundAlpha', .5); 
+				} else {
+					event.currentTarget.setStyle('backgroundAlpha', .25);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas height="55" id="canvas1" right="20" left="20">
+		<!--<mx:Image source="{logo}" toolTip="LoanPro360 Version {Shell.version} &#13;&#13;Tip: Click the LoanPro360 Logo to hide your menu." id="image1" left="10" top="16"/>-->
+		<mx:HBox verticalCenter="0" right="10">
+			<mx:HBox click="changePassword();" cornerRadius="10" borderStyle="solid" backgroundColor="#FFFFFF" backgroundAlpha="0.25" paddingLeft="5" paddingBottom="1" paddingRight="5" paddingTop="1" height="25" horizontalAlign="center" verticalAlign="middle"
+				mouseOver="highlight(event, true)" mouseOut="highlight(event, false)" buttonMode="true" useHandCursor="true" mouseChildren="false">
+				<mx:Label text="Change Password"/>
+			</mx:HBox>
+			<mx:HBox cornerRadius="10" borderStyle="solid" backgroundColor="#FFFFFF" backgroundAlpha="0.25" paddingLeft="5" paddingBottom="1" paddingRight="5" paddingTop="1" width="80" horizontalAlign="center" verticalAlign="middle" height="25"
+				click="adminService.logOut();" mouseOver="highlight(event, true)" mouseOut="highlight(event, false)" buttonMode="true" useHandCursor="true" mouseChildren="false">
+				<mx:Label text="Logout"/>
+			</mx:HBox>
+		</mx:HBox>
+	</mx:Canvas>
+	<mx:TabNavigator right="20" left="20" top="63" bottom="19">
+		<mx:Canvas label="Users" width="100%" height="100%">
+			<mx:DataGrid id="userGrid" left="10" top="177" bottom="38" right="10">
+				<mx:columns>
+					<mx:DataGridColumn headerText="ID#" dataField="user_id"/>
+					<mx:DataGridColumn headerText="First Name" dataField="first_name"/>
+					<mx:DataGridColumn headerText="Last Name" dataField="last_name"/>
+					<mx:DataGridColumn headerText="Email Address" dataField="email"/>
+					<mx:DataGridColumn width="100" headerText="Actions">
+						<mx:itemRenderer>
+							<mx:Component>
+				          			<mx:HBox horizontalScrollPolicy="off" width="100" horizontalGap="5" horizontalAlign="center">
+				          				<mx:Script>
+				          					<![CDATA[
+				          						import com.Plex.effects.Slick;
+				          						import com.red.User_Editor;
+				          						import com.Plex.controls.ButtonPrompt;
+				          						import com.Plex.controls.Prompt;
+				          						import mx.core.Application;
+				          						
+				          						public function editUser():void {
+				          							var editor:User_Editor = Slick.open(User_Editor) as User_Editor;
+				          							editor.loadUser(data.user_id);
+				          						}
+				          						
+				          						public function deleteUser():void {
+				          							var bp:ButtonPrompt = ButtonPrompt.newInstance('Are You Sure?',
+				          								'Are you sure you want to delete this user permanantly?');
+				          							bp.addOption('Yes, Delete User', function():void {
+				          								Application.application.userService.deleteUser(data.user_id);
+				          							},'Symbol-Check');
+				          							bp.addOption('No, Don\'t Delete User', null, 'Symbol-Stop');
+				          						}
+				          						
+				          						
+				          					]]>
+				          				</mx:Script>
+				          				<mx:Image buttonMode="true" source="asset/image/silk/user_edit.png" click="editUser()" toolTip="Edit "/>
+				          				<mx:Image buttonMode="true" source="asset/image/silk/user_delete.png" click="deleteUser()" toolTip="Delete "/>
+
+				          			</mx:HBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:TextInput y="147" right="10"/>
+			<mx:Button label="&lt;&lt; Previous Page" width="150" horizontalCenter="-86" bottom="10"/>
+			<mx:Button label="Next Page &gt;&gt;" width="150" horizontalCenter="85" bottom="10"/>
+			<mx:HBox height="129" left="10" right="10" top="10">
+				<mx:Legend dataProvider="{userChart}"/>
+				<mx:BarChart id="userChart" height="112" width="100%">
+				<mx:verticalAxis>
+			        <mx:CategoryAxis 
+			                dataProvider="{userChart.dataProvider}" 
+			                categoryField="today"
+			           />
+			        </mx:verticalAxis>
+					<mx:series>
+						<mx:BarSeries displayName="Total Users" xField="total_user_count"/>
+						<mx:BarSeries displayName="Total Admins" xField="total_admin_count"/>
+						<mx:BarSeries displayName="Logins Today" xField="logins_today"/>
+						<mx:BarSeries displayName="New Users Today" xField="new_users_today"/>
+					</mx:series>
+				</mx:BarChart>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas label="Content" width="100%" height="100%">
+			<mx:DataGrid left="10" top="177" bottom="10" right="10">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Column 1" dataField="col1"/>
+					<mx:DataGridColumn headerText="Column 2" dataField="col2"/>
+					<mx:DataGridColumn headerText="Column 3" dataField="col3"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:TextInput y="147" right="10"/>
+		</mx:Canvas>
+	</mx:TabNavigator>
+</mx:Application>

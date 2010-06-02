@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" height="25" resizeEffect="{r1}" toolTip="{toolTipText}">
+	<mx:Metadata>
+		[Event(name="executionTaskComplete", type="com.Plex.events.ExecutionEvent")]
+		[Event(name="executionError", type="com.Plex.events.ExecutionEvent")]
+	</mx:Metadata>
+	<mx:states>
+		<mx:State name="working">
+			<mx:SetProperty target="{label1}" name="text" value="Working"/>
+			<mx:SetProperty target="{image1}" name="source" value="asset/image/silk/lightning.png"/>
+			<mx:AddChild position="lastChild">
+				<mx:ProgressBar width="100%" labelPlacement="center" id="progressbar1"/>
+			</mx:AddChild>
+			<mx:SetStyle name="verticalGap" value="0"/>
+			<mx:SetProperty name="height" value="40"/>
+			<mx:SetProperty name="verticalScrollPolicy" value="off"/>
+			<mx:SetProperty name="horizontalScrollPolicy" value="off"/>
+			<mx:SetProperty target="{hbox1}" name="horizontalScrollPolicy" value="off"/>
+			<mx:SetProperty target="{hbox1}" name="verticalScrollPolicy" value="off"/>
+		</mx:State>
+		<mx:State name="finished" basedOn="working">
+			<mx:RemoveChild target="{progressbar1}"/>
+			<mx:SetProperty name="height" value="25"/>
+			<mx:SetProperty target="{label1}" name="text" value="Complete"/>
+			<mx:SetProperty target="{image1}" name="source" value="asset/image/silk/accept.png"/>
+		</mx:State>
+	</mx:states>
+	<mx:Resize duration="300" id="r1"/>
+	<mx:Script>
+		<![CDATA[
+			import com.Plex.events.ExecutionEvent;
+						
+			public var action:Function = null;
+			public var error:String;			
+			
+			[Bindable]
+			public var title:String = null;
+			
+			[Bindable]
+			public var toolTipText:String = null;
+			
+			public function execute():void {
+				currentState='working';
+				action(this);
+			}
+			
+			public function finished():void {
+				dispatchEvent(new ExecutionEvent(ExecutionEvent.TASK_COMPLETE));
+				currentState='finished';
+			}
+			
+			public function errorOut(errorMsg:String):void {
+				error = errorMsg;
+				dispatchEvent(new ExecutionEvent(ExecutionEvent.ERROR));
+			} 
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="378" height="25" verticalAlign="middle" horizontalAlign="center" id="hbox1">
+		<mx:Spacer/>
+		<mx:Image width="16" height="16" source="asset/image/silk/clock.png" id="image1"/>
+		<mx:Label text="{title}" width="270"/>
+		<mx:Label text="Pending" textAlign="center" width="65" id="label1"/>
+	</mx:HBox>
+</mx:VBox>

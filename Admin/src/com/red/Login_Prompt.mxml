@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="init();"
+	layout="absolute" width="400" height="183" headerHeight="8">
+	<mx:RemoteObject id="adminService" source="Admin" destination="zend" showBusyCursor="true">
+		<mx:method name="login" result="loginResult( event )" />
+	</mx:RemoteObject>
+	<mx:Script>
+		<![CDATA[
+			import com.Plex.controls.Prompt;
+			import mx.core.Application;
+			import mx.rpc.events.ResultEvent;
+			import com.Plex.effects.Slick;
+			
+			public function init():void {
+				Application.application.fadeOut();
+			}
+			
+			public function close() {
+				Slick.close( this ) ;
+			}
+			
+			public function loginResult( e:ResultEvent ):void {
+				if( e.result.success ) {
+					close();
+					Application.application.fadeIn();
+				} else {
+					Prompt.error(e.result.error);
+				}
+			}
+			
+			public function login():void {
+				adminService.login(emailInput.text, passwordInput.text);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Form x="10" y="10" width="360">
+		<mx:FormItem label="Email:" width="100%">
+			<mx:TextInput enter="login();" id="emailInput" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="Password:" width="100%">
+			<mx:TextInput enter="login();" id="passwordInput"  width="100%" displayAsPassword="true"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button click="login()" label="Login"/>
+	</mx:ControlBar>
+</mx:TitleWindow>
